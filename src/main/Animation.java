@@ -26,12 +26,12 @@ public class Animation
 		frmAnimate.setLayout(null);
 		frmAnimate.setLocationRelativeTo(null);
 		
-		animateIcon  = new ImageIcon("src/assets/src/assets/PNGBaaja.png");
+		animateIcon  = new ImageIcon("src/assets/musicplay.png");
 		Image animateImage = animateIcon.getImage();
 		animateIcon.setImage(animateImage);
 		frmAnimate.setIconImage(animateImage);
 		
-		introIcon = new ImageIcon("src/assets/AnimationLogoBaajaPNG.png");
+		introIcon = new ImageIcon("src/assets/playanimation.png");
 		Image imgAnimateIntro = introIcon.getImage();
 		imgAnimateIntro = imgAnimateIntro.getScaledInstance(width, height, Image.SCALE_DEFAULT);
 		introIcon.setImage(imgAnimateIntro);
