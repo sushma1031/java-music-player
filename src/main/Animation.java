@@ -31,7 +31,7 @@ public class Animation
 		animateIcon.setImage(animateImage);
 		frmAnimate.setIconImage(animateImage);
 		
-		introIcon = new ImageIcon("src/assets/playanimation.png");
+		introIcon = new ImageIcon("src/assets/musicplay.png");
 		Image imgAnimateIntro = introIcon.getImage();
 		imgAnimateIntro = imgAnimateIntro.getScaledInstance(width, height, Image.SCALE_DEFAULT);
 		introIcon.setImage(imgAnimateIntro);

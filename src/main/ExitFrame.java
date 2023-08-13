@@ -44,7 +44,7 @@ public class ExitFrame
 		exitFrame.setLayout(null);
 		exitFrame.getContentPane().setBackground(new Color(38, 38, 38));
 		
-		iconShakey  = new ImageIcon("src/asstes/shakey.png");
+		iconShakey  = new ImageIcon("src/assets/shakey.png");
 		Image imageShakey = iconShakey.getImage();
 		iconShakey.setImage(imageShakey);
 		exitFrame.setIconImage(imageShakey);
