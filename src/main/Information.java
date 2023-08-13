@@ -101,12 +101,10 @@ public class Information
 		pnlInfoHdr.add(btnClose);
 		
 		
-		
-		
 		ImageIcon iconLogo  = new ImageIcon("src/assets/musicplay.png");
-		 Image imageLogo = iconLogo.getImage();
-		 imageLogo = imageLogo.getScaledInstance(380,150, Image.SCALE_DEFAULT);
-		 iconLogo.setImage(imageLogo);
+		Image imageLogo = iconLogo.getImage();
+		imageLogo = imageLogo.getScaledInstance(380,150, Image.SCALE_DEFAULT);
+		iconLogo.setImage(imageLogo);
 		
 		JLabel lblLogo=new JLabel(iconLogo);
 		lblLogo.setBounds(20,80,380,150);
