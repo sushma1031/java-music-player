@@ -31,7 +31,7 @@ public class Information
 		infoFrame.setLayout(null);
 		infoFrame.getContentPane().setBackground(new Color(176,224,230));
 		
-		iconSplash  = new ImageIcon("src/assets/PNGBaaja.png");
+		iconSplash  = new ImageIcon("src/assets/musicplay.png");
 		imageSplash = iconSplash.getImage();
 		iconSplash.setImage(imageSplash);
 		infoFrame.setIconImage(imageSplash);
@@ -49,7 +49,7 @@ public class Information
 		pnlInfoHdr.add(lblInfo);
 		
 		////////////////////////////icon_Logo starts here ////////////////////////////////////
-		iconLogo = new ImageIcon("src/assets/PNGBaaja.png");
+		iconLogo = new ImageIcon("src/assets/musicplay.png");
 		imageLogo = iconLogo .getImage();
 		imageLogo  = imageLogo .getScaledInstance(39,39, Image.SCALE_SMOOTH);
 		iconLogo .setImage(imageLogo );
@@ -103,7 +103,7 @@ public class Information
 		
 		
 		
-		ImageIcon iconLogo  = new ImageIcon("src/assets/LogoBaajaPNG.png");
+		ImageIcon iconLogo  = new ImageIcon("src/assets/musicplay.png");
 		 Image imageLogo = iconLogo.getImage();
 		 imageLogo = imageLogo.getScaledInstance(380,150, Image.SCALE_DEFAULT);
 		 iconLogo.setImage(imageLogo);
@@ -114,7 +114,7 @@ public class Information
 		
 		JLabel lblInfo1=new JLabel();
 		lblInfo1.setBounds(200,200,450,300);
-		lblInfo1.setText("<html>MusicPlayer v1.0 is designed & developed by :-<br><br>-> Roshan Kumar<br><br> <br><br>Created on 13th may 2020</html>");
+		lblInfo1.setText("<html>MusicPlayer designed by Sourabh Bhat and Sushma Jayaram</html>");
 		lblInfo1.setFont(new Font("Times New Roman",Font.BOLD,14));
 		infoFrame.getContentPane().add(lblInfo1);
 		

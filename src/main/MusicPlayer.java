@@ -67,7 +67,7 @@ public class MusicPlayer
 		frmPlayer.setLayout(null);
 		frmPlayer.setOpacity(0.9f);
 		
-		iconSplash  = new ImageIcon("src/assets/PNGBaaja.png");
+		iconSplash  = new ImageIcon("src/assets/musicplay.png");
 		imageSplash = iconSplash.getImage();
 		iconSplash.setImage(imageSplash);
 		frmPlayer.setIconImage(imageSplash);
@@ -79,7 +79,7 @@ public class MusicPlayer
 		frmPlayer.getContentPane().add(pnlHeader);
 		
 		////////////////////////////icon_Logo starts here ////////////////////////////////////
-		iconLogo = new ImageIcon("src/assets/PNGBaaja.png");
+		iconLogo = new ImageIcon("src/assets/musicplay.png");
 		imageLogo = iconLogo .getImage();
 		imageLogo  = imageLogo .getScaledInstance(39,39, Image.SCALE_SMOOTH);
 		iconLogo .setImage(imageLogo );
@@ -602,7 +602,7 @@ public class MusicPlayer
 	    iconAni.setImage(imageAni0);
 	    
 	    
-	    iconStatic  = new ImageIcon("src/assets/LogoBaajaPNG.png");
+	    iconStatic  = new ImageIcon("src/assets/musicplay.png");
 	    imageStatic = iconStatic.getImage();
 	    imageStatic = imageStatic.getScaledInstance(330,200, Image.SCALE_DEFAULT);
 	    iconStatic.setImage(imageStatic);
