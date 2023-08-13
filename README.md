@@ -2,7 +2,7 @@
 
 ## Steps to configure the build path
 
-### Method 1 (Directly edit the .classpath file)
+### Method 1 (Directly edit the .classpath file):
 1. Open the `.classpath` in any text editor
 1. Replace the line `<classpathentry kind="src" path="src"/>` with the following lines:
 ```
