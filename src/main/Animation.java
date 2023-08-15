@@ -26,16 +26,17 @@ public class Animation
 		frmAnimate.setLayout(null);
 		frmAnimate.setLocationRelativeTo(null);
 		
+		//To set icon image, i.e. taskbar icon
 		animateIcon  = new ImageIcon("src/assets/musicplay.png");
 		Image animateImage = animateIcon.getImage();
-		animateIcon.setImage(animateImage);
 		frmAnimate.setIconImage(animateImage);
 		
+		//To set splash screen image
 		introIcon = new ImageIcon("src/assets/musicplay.png");
-		Image imgAnimateIntro = introIcon.getImage();
-		imgAnimateIntro = imgAnimateIntro.getScaledInstance(width, height, Image.SCALE_DEFAULT);
+		Image imgAnimateIntro = introIcon.getImage().getScaledInstance(width, height, Image.SCALE_DEFAULT);
 		introIcon.setImage(imgAnimateIntro);
 		
+		//To add splash screen image to the JFrame
 		introLabel = new JLabel(introIcon);
 		introLabel.setBounds(0, 0, width, height);
 		introLabel.setLayout(null);
@@ -56,7 +57,9 @@ public class Animation
 					obj.init();
 					frmAnimate.dispose();
 				}
-				catch (Exception e) {}
+				catch (Exception e) {
+					System.err.println("Error: " + e.getMessage());
+				}
 			}
 		}.start();
 	}//function animate() closed here
