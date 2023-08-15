@@ -15,26 +15,26 @@ import javax.swing.SwingConstants;
 public class Information 
 {
 	JFrame infoFrame;
-	Image imageSplash, imageLogo,imageClose;
-	ImageIcon iconSplash, iconLogo, iconClose;
+	Image museLogo, imageLogo, imageClose;
+	ImageIcon museIcon, iconLogo, iconClose;
 	JButton btnLogo, btnClose;
 	
 	MoveMouseListener mmlInfoObj;
 	
-	public void infoframe() //Info
+	public void displayInfoFrame() //Info
 	{
 		infoFrame=new JFrame("Info");
-		infoFrame.setSize(700,500);
+		infoFrame.setSize(500,300);
 		infoFrame.setUndecorated(true);
 		infoFrame.setOpacity(0.9f);
 		infoFrame.setLocationRelativeTo(null);
 		infoFrame.setLayout(null);
-		infoFrame.getContentPane().setBackground(new Color(176,224,230));
+		infoFrame.getContentPane().setBackground(new Color(211, 238, 241));
 		
-		iconSplash  = new ImageIcon("src/assets/musicplay.png");
-		imageSplash = iconSplash.getImage();
-		iconSplash.setImage(imageSplash);
-		infoFrame.setIconImage(imageSplash);
+		//To set app icon
+		museIcon  = new ImageIcon("src/assets/musicplay.png");
+		museLogo = museIcon.getImage();
+		infoFrame.setIconImage(museLogo);
 		
 		JPanel pnlInfoHdr=new JPanel();
 		pnlInfoHdr.setBackground(Color.black);
@@ -42,41 +42,39 @@ public class Information
 		pnlInfoHdr.setBounds(0, 0, 700,60);
 		infoFrame.getContentPane().add(pnlInfoHdr);
 		
-		JLabel lblInfo=new JLabel("About MusicPlayer",SwingConstants.CENTER);
-		lblInfo.setBounds(10,5,650,40);
+		JLabel lblInfo=new JLabel("About Muse.ic",SwingConstants.CENTER);
+		lblInfo.setBounds(10,5,450,40);
 		lblInfo.setForeground(Color.WHITE);
 		lblInfo.setFont(new Font("Times New Roman",Font.BOLD,24));
 		pnlInfoHdr.add(lblInfo);
 		
-		////////////////////////////icon_Logo starts here ////////////////////////////////////
+		//To set scaled image for icon logo
 		iconLogo = new ImageIcon("src/assets/musicplay.png");
-		imageLogo = iconLogo .getImage();
-		imageLogo  = imageLogo .getScaledInstance(39,39, Image.SCALE_SMOOTH);
-		iconLogo .setImage(imageLogo );
-		//////////////////////////// icon_Logo closed here /////////////////////////////////////
+		imageLogo = iconLogo.getImage().getScaledInstance(39,39, Image.SCALE_SMOOTH);
+		iconLogo.setImage(imageLogo);
 		
-		btnLogo = new JButton();
+		//To create an icon as a button (with no action)
+		btnLogo = new JButton(iconLogo);
 		btnLogo.setBounds(5, 5, 40, 40);
-		btnLogo.setFont(new Font("Times New Roman",Font.BOLD,9));
 		btnLogo.setFocusPainted(false);
 		btnLogo.setBorderPainted(false);
 		btnLogo.setContentAreaFilled(false);
 		btnLogo.setBackground(Color.black);
-		btnLogo.setIcon(iconLogo);
 		btnLogo.addActionListener(new ActionListener() 
 		{
-			public void actionPerformed(ActionEvent e) 
-			{
-		
-			}          
+			public void actionPerformed(ActionEvent e) {}          
 		});
 		
-		pnlInfoHdr.add(btnLogo);
+		pnlInfoHdr.add(btnLogo); //Add the button icon to the panel
 		
+		//Create a scaled version of the close icon for the button
+		iconClose  = new ImageIcon("src/assets/PNGClose.png");
+		imageClose = iconClose.getImage().getScaledInstance(39,39, Image.SCALE_SMOOTH);
+		iconClose.setImage(imageClose);
 		
-		btnClose = new JButton();
-		btnClose.setBounds(650, 10, 40, 40);
-		btnClose.setFont(new Font("Times New Roman",Font.BOLD,9));
+		//Create a button to close the window
+		btnClose = new JButton(iconClose);
+		btnClose.setBounds(450, 10, 40, 40);
 		btnClose.setFocusPainted(false);
 		btnClose.setBorderPainted(false);
 		btnClose.setContentAreaFilled(false);
@@ -89,36 +87,21 @@ public class Information
 					infoFrame.dispose();
 		    }          
 		});
-		
-		////////////////////////////icon_close starts here ////////////////////////////////////
-		iconClose  = new ImageIcon("src/assets/PNGClose.png");
-		imageClose = iconClose.getImage();
-		imageClose = imageClose.getScaledInstance(39,39, Image.SCALE_SMOOTH);
-		iconClose.setImage(imageClose);
-		//////////////////////////// icon_close closed here /////////////////////////////////////
-		
-		btnClose.setIcon(iconClose);
-		pnlInfoHdr.add(btnClose);
+		pnlInfoHdr.add(btnClose); //Add button to panel
 		
 		
-		ImageIcon iconLogo  = new ImageIcon("src/assets/musicplay.png");
-		Image imageLogo = iconLogo.getImage();
-		imageLogo = imageLogo.getScaledInstance(380,150, Image.SCALE_DEFAULT);
-		iconLogo.setImage(imageLogo);
-		
-		JLabel lblLogo=new JLabel(iconLogo);
-		lblLogo.setBounds(20,80,380,150);
-		infoFrame.getContentPane().add(lblLogo);
-		
+		//To display information about the music player		
 		JLabel lblInfo1=new JLabel();
-		lblInfo1.setBounds(200,200,450,300);
-		lblInfo1.setText("<html>MusicPlayer designed by Sourabh Bhat and Sushma Jayaram</html>");
+		lblInfo1.setBounds(100,0,450,300);
+		String labelText = "<html><div style='text-align: center; line-height:1.75em;'>"
+                + "Muse.ic is a simple music player application,<br>"
+                + "designed by Sourabh Bhat and Sushma Jayaram."
+                + "</div></html>";
+		lblInfo1.setText(labelText);
 		lblInfo1.setFont(new Font("Times New Roman",Font.BOLD,14));
 		infoFrame.getContentPane().add(lblInfo1);
 		
-		infoFrame.repaint();
-		
-		
+		//Allow dragging of the information panel
 		mmlInfoObj = new MoveMouseListener(pnlInfoHdr);
 	    pnlInfoHdr.addMouseListener(mmlInfoObj);
 	    pnlInfoHdr.addMouseMotionListener(mmlInfoObj);
