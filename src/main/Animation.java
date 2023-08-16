@@ -44,23 +44,17 @@ public class Animation
 		frmAnimate.setBackground(Color.black);
 		
 		frmAnimate.setVisible(true);
-		
-		new Thread()
+		try
 		{
-			public void run()
-			{
-				try
-				{
-					MusicPlayer obj = new MusicPlayer();
+			MusicPlayer obj = new MusicPlayer();
+	
+			Thread.sleep(1500);
+			obj.init();
+			frmAnimate.dispose();
+		}
+		catch (Exception e) {
+			System.err.println("Error: " + e.getMessage());
+		}
 			
-					sleep(1500);
-					obj.init();
-					frmAnimate.dispose();
-				}
-				catch (Exception e) {
-					System.err.println("Error: " + e.getMessage());
-				}
-			}
-		}.start();
 	}//function animate() closed here
 }
