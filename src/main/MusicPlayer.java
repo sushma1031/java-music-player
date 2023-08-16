@@ -105,7 +105,7 @@ public class MusicPlayer {
 		mml1 = new MoveMouseListener(pnlHeader);
 		pnlHeader.addMouseListener(mml1);
 		pnlHeader.addMouseMotionListener(mml1);
-		
+
 		// Create scaled icon image for close icon
 		iconClose = new ImageIcon("src/assets/PNGClose.png");
 		imageClose = iconClose.getImage().getScaledInstance(39, 39, Image.SCALE_SMOOTH);
@@ -319,6 +319,10 @@ public class MusicPlayer {
 		pnlBodyList.add(scrollPane);
 	}
 
+	public void setVisual() {
+		lblAni.setIcon(iconAni);
+	}
+	
 	public void stopPlayer() {
 		try {
 			playStatus = 0;
@@ -334,13 +338,16 @@ public class MusicPlayer {
 		}
 	}
 
-	public void playTrack(String path) {
+	public void playTrack(String path, boolean resume) {
 		try {
 			fis1 = new FileInputStream(path);
 			bis1 = new BufferedInputStream(fis1);
 			player = new Player(bis1);
 			songLength = fis1.available();
 			playStatus = 1;
+			if(resume) {
+				fis1.skip(songLength - pauseLoc);
+			}
 			btnMPP.setIcon(iconPause);
 			setVisual();
 			lblCurrentSong.setText(selectedFiles[trackNo].getName());
@@ -379,55 +386,20 @@ public class MusicPlayer {
 	public void pauseTrack() {
 		if (player != null) {
 			try {
-				pauseLoc = fis1.available(); //approximate number of bytes remaining
+				pauseLoc = fis1.available(); // approximate number of bytes remaining
 				player.close();
 				playStatus = 2;
 				btnMPP.setToolTipText("Resume");
 			} catch (IOException e) {
 			}
 		}
-	}//end of pauseTrack()
+	}// end of pauseTrack()
 
 	public void resumeTrack() {
 
-		try {
+		playTrack(strPathNew, true);
 
-			fis1 = new FileInputStream(strPathNew);
-			bis1 = new BufferedInputStream(fis1);
-			player = new Player(bis1);
-			songLength = fis1.available();
-			playStatus = 1;
-			fis1.skip(songLength - pauseLoc);
-			btnMPP.setIcon(iconPause);
-			setVisual();
-			btnMPP.setToolTipText("Pause");
-		} catch (FileNotFoundException | JavaLayerException ex) {
-			playStatus = 0;
-			btnMPP.setIcon(iconPlay);
-			lblAni.setIcon(iconLogo);
-			lblCurrentSong.setText("");
-			btnMPP.setToolTipText("Select MP3 files");
-			stopPlayer();
-		} catch (IOException e) {
-		}
-		new Thread() {
-			public void run() {
-				try {
-					player.play();
-					if (player.isComplete()) {
-						btnMNext.doClick();
-					}
-				} catch (JavaLayerException e) {
-					strPath = "";
-					playStatus = 0;
-					lblCurrentSong.setText("");
-					btnMPP.setIcon(iconPlay);
-					lblAni.setIcon(iconLogo);
-				}
-			}
-		}.start();
-
-	}//end of resumeTrack()
+	}// end of resumeTrack()
 
 	public void prevTrack() {
 		try {
@@ -439,7 +411,7 @@ public class MusicPlayer {
 		} catch (Exception e2) {
 		}
 
-		if (trackNo == selectedFiles.length - 1 && selectedFiles.length - 1 == 0) {//if there is only one track
+		if (trackNo == selectedFiles.length - 1 && selectedFiles.length - 1 == 0) {// if there is only one track
 			jumpTrack(0);
 		} else {
 			try {
@@ -447,7 +419,7 @@ public class MusicPlayer {
 			} catch (Exception e) {
 			}
 		}
-	}//end of prevTrack()
+	}// end of prevTrack()
 
 	public void playPauseTrack() {
 		if (playStatus == 0) {
@@ -455,11 +427,12 @@ public class MusicPlayer {
 			fcPath.setMultiSelectionEnabled(true);
 			filepathresponse = fcPath.showOpenDialog(pnlBody);
 			if (filepathresponse == JFileChooser.APPROVE_OPTION) {
-				//user selects files
+				// user selects files
 				selectedFiles = fcPath.getSelectedFiles();
 				strPath = selectedFiles[0].getAbsolutePath();
 				trackNo = 0;
-				strPath = strPath.replace("\\", "\\\\");//replacing the escape slashes in file path with literal slashes
+				strPath = strPath.replace("\\", "\\\\");// replacing the escape slashes in file path with literal
+														// slashes
 
 				for (int i = 0; i < selectedFiles.length; i++) {
 					listModel.addElement(selectedFiles[i].getName());
@@ -467,7 +440,7 @@ public class MusicPlayer {
 
 				playStatus = 1;
 				list.setSelectedIndex(0);
-				
+
 			}
 		}
 
@@ -494,7 +467,7 @@ public class MusicPlayer {
 		} catch (Exception e2) {
 		}
 
-		if (trackNo == 0 && selectedFiles.length - 1 == 0) {//if there is only one song
+		if (trackNo == 0 && selectedFiles.length - 1 == 0) {// if there is only one song
 			jumpTrack(0);
 		} else {
 			try {
@@ -504,10 +477,6 @@ public class MusicPlayer {
 		}
 	}// end of endTrack()
 
-	public void setVisual() {
-		lblAni.setIcon(iconAni);
-	}
-
 	public void jumpTrack(int index) {
 		try {
 			player.close();
@@ -516,8 +485,8 @@ public class MusicPlayer {
 			strPath = strPath.replace("\\", "\\\\");
 		} catch (Exception e2) {
 		}
-		if (filepathresponse == 0 && playStatus != 0)
-			playTrack(strPath);
+		if (filepathresponse == JFileChooser.APPROVE_OPTION && playStatus != 0)
+			playTrack(strPath, false);
 	}// end of jumpTrack()
 
 }
