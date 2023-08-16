@@ -15,7 +15,7 @@ import javax.swing.SwingConstants;
 
 public class ExitFrame {
 	JFrame exitFrame;
-	ImageIcon iconShakey, iconClose, iconOK, iconCancel;
+	ImageIcon iconClose, iconOK, iconCancel;
 	Image imageClose, imageOK, imageCancel;
 	JPanel pnlexitHdr;
 	JButton btnCloseExit, btnOK, btnCancel;
