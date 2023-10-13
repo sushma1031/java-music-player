@@ -16,6 +16,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.JSlider;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
@@ -39,7 +40,7 @@ public class MusicPlayer {
 	FileInputStream fis1;
 	File[] selectedFiles;
 	BufferedInputStream bis1;
-	JFileChooser fcPath = new JFileChooser();
+	JFileChooser fcPath = new JFileChooser("C:\\Users\\Rajasree\\Desktop\\Sushma\\Code\\Java Music Player MiniProject\\Test Music");
 	String strPath = "", strPathNew;
 	FileNameExtensionFilter filter;
 
@@ -151,7 +152,7 @@ public class MusicPlayer {
 	public void decoratePlayer() {
 		pnlBody = new JPanel();
 		pnlBody.setBackground(Color.black);
-		pnlBody.setBounds(0, 84, width - 250, height - 84);
+		pnlBody.setBounds(0, 84, width - 250, height - 30);
 		pnlBody.setLayout(null);
 		frmPlayer.getContentPane().add(pnlBody);
 
@@ -166,6 +167,15 @@ public class MusicPlayer {
 		lblCurrentSong.setForeground(Color.WHITE);
 		pnlHeaderTrack.add(lblCurrentSong);
 
+		//Add seek bar component
+		seekBar = new JSlider(JSlider.HORIZONTAL);
+		seekBar.setBounds(25, 240, width - 300, 15);
+		seekBar.setPaintTicks(false);
+		seekBar.setPaintLabels(false);
+		seekBar.setSnapToTicks(true);
+		seekBar.setBackground(Color.BLACK);
+		pnlBody.add(seekBar);
+		
 		// Add button to stop playing
 		iconStop = new ImageIcon("src/assets/PNGStop.png");
 		imageStop = iconStop.getImage().getScaledInstance(39, 39, Image.SCALE_SMOOTH);
