@@ -40,7 +40,7 @@ public class MusicPlayer {
 	FileInputStream fis1;
 	File[] selectedFiles;
 	BufferedInputStream bis1;
-	JFileChooser fcPath = new JFileChooser("C:\\Users\\Rajasree\\Desktop\\Sushma\\Code\\Java Music Player MiniProject\\Test Music");
+	JFileChooser fcPath = new JFileChooser();
 	String strPath = "", strPathNew;
 	FileNameExtensionFilter filter;
 
@@ -48,6 +48,7 @@ public class MusicPlayer {
 	ExitFrame exitFrameObj;
 
 	JLabel lblCurrentSong;
+	JSlider seekBar;
 
 	int width = 600, height = 410;
 
@@ -178,11 +179,11 @@ public class MusicPlayer {
 		
 		// Add button to stop playing
 		iconStop = new ImageIcon("src/assets/PNGStop.png");
-		imageStop = iconStop.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH);
+		imageStop = iconStop.getImage().getScaledInstance(39, 39, Image.SCALE_SMOOTH);
 		iconStop.setImage(imageStop);
 
 		btnStop = new JButton(iconStop);
-		btnStop.setBounds(30, 270, 30, 30);
+		btnStop.setBounds(20, 270, 42, 42);
 		btnStop.setBackground(Color.BLACK);
 		btnStop.setFocusPainted(false);
 		btnStop.setBorderPainted(false);
@@ -198,11 +199,11 @@ public class MusicPlayer {
 
 		// Add button to go to previous track in queue
 		iconPrev = new ImageIcon("src/assets/PNGPrevious.png");
-		imagePrev = iconPrev.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH);
+		imagePrev = iconPrev.getImage().getScaledInstance(39, 39, Image.SCALE_SMOOTH);
 		iconPrev.setImage(imagePrev);
 
 		btnMPrev = new JButton(iconPrev);
-		btnMPrev.setBounds(130, 270, 30, 30);
+		btnMPrev.setBounds(120, 270, 42, 42);
 		btnMPrev.setBackground(Color.BLACK);
 		btnMPrev.setFocusPainted(false);
 		btnMPrev.setBorderPainted(false);
@@ -218,18 +219,18 @@ public class MusicPlayer {
 
 		// Create icon play track
 		iconPlay = new ImageIcon("src/assets/PNGPlay.png");
-		imagePlay = iconPlay.getImage().getScaledInstance(39, 39, Image.SCALE_SMOOTH);
+		imagePlay = iconPlay.getImage().getScaledInstance(59, 59, Image.SCALE_SMOOTH);
 		iconPlay.setImage(imagePlay);
 
 		// Create icon to pause track
 		iconPause = new ImageIcon("src/assets/PNGPause.png");
 		imagePause = iconPause.getImage();
-		imagePause = imagePause.getScaledInstance(39, 39, Image.SCALE_SMOOTH);
+		imagePause = imagePause.getScaledInstance(59, 59, Image.SCALE_SMOOTH);
 		iconPause.setImage(imagePause);
 
 		// Add button to play/pause track
 		btnMPP = new JButton(iconPlay);
-		btnMPP.setBounds(205, 260, 42, 42);
+		btnMPP.setBounds(190, 260, 63, 63);
 		btnMPP.setBackground(Color.BLACK);
 		btnMPP.setFocusPainted(false);
 		btnMPP.setBorderPainted(false);
@@ -250,7 +251,7 @@ public class MusicPlayer {
 		iconNext.setImage(imageNext);
 
 		btnMNext = new JButton(iconNext);
-		btnMNext.setBounds(290, 270, 30, 30);
+		btnMNext.setBounds(280, 270, 42, 42);
 		btnMNext.setBackground(Color.BLACK);
 		btnMNext.setFocusPainted(false);
 		btnMNext.setBorderPainted(false);
