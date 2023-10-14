@@ -13,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -168,13 +170,30 @@ public class MusicPlayer {
 		lblCurrentSong.setForeground(Color.WHITE);
 		pnlHeaderTrack.add(lblCurrentSong);
 
-		//Add seek bar component
-		seekBar = new JSlider(JSlider.HORIZONTAL);
+		// Add seek bar component
+		seekBar = new JSlider(JSlider.HORIZONTAL, 0, 300, 0);
 		seekBar.setBounds(25, 240, width - 300, 15);
 		seekBar.setPaintTicks(false);
 		seekBar.setPaintLabels(false);
 		seekBar.setSnapToTicks(true);
-		seekBar.setBackground(Color.BLACK);
+		seekBar.setOpaque(false);
+		seekBar.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if (!seekBar.getValueIsAdjusting()) {
+					int position = (int) seekBar.getValue();
+					float percentage = (float) (300 - position) / 300;
+					pauseLoc = (long) (percentage * songLength);
+					try {
+						//timer.stop();
+						player.close();
+						playStatus = 2;
+						playTrack(strPathNew);
+					} catch (Exception e3) {
+						e3.printStackTrace();
+					}
+				}
+			}
+		});
 		pnlBody.add(seekBar);
 		
 		// Add button to stop playing
@@ -191,6 +210,7 @@ public class MusicPlayer {
 		btnStop.setToolTipText("Stop");
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				playStatus = 0;
 				stopPlayer();
 			}
 
@@ -336,12 +356,11 @@ public class MusicPlayer {
 	
 	public void stopPlayer() {
 		try {
-			playStatus = 0;
+			player.close();
 			strPath = "";
 			lblCurrentSong.setText("Hit the PLAY button");
 			btnMPP.setIcon(iconPlay);
 			lblAni.setIcon(iconStatic);
-			player.close();
 			trackNo = 0;
 			btnMPP.setToolTipText("Select MP3 files");
 			listModel.clear();
@@ -349,16 +368,16 @@ public class MusicPlayer {
 		}
 	}
 
-	public void playTrack(String path, boolean resume) {
+	public void playTrack(String path) {
 		try {
 			fis1 = new FileInputStream(path);
 			bis1 = new BufferedInputStream(fis1);
 			player = new Player(bis1);
 			songLength = fis1.available();
-			playStatus = 1;
-			if(resume) {
+			if (playStatus == 2) {
 				fis1.skip(songLength - pauseLoc);
 			}
+			playStatus = 1;
 			btnMPP.setIcon(iconPause);
 			setVisual();
 			lblCurrentSong.setText(selectedFiles[trackNo].getName());
@@ -369,7 +388,7 @@ public class MusicPlayer {
 			playStatus = 0;
 			btnMPP.setIcon(iconPlay);
 			lblAni.setIcon(iconLogo);
-			lblCurrentSong.setText("");
+			lblCurrentSong.setText("Help");
 			btnMPP.setToolTipText("Select MP3 files");
 
 		} catch (IOException e) {
@@ -380,6 +399,7 @@ public class MusicPlayer {
 				try {
 					player.play();
 					if (player.isComplete()) {
+						playStatus = 3;
 						btnMNext.doClick();
 					}
 				} catch (JavaLayerException e) {
@@ -407,8 +427,7 @@ public class MusicPlayer {
 	}// end of pauseTrack()
 
 	public void resumeTrack() {
-
-		playTrack(strPathNew, true);
+		playTrack(strPathNew);
 
 	}// end of resumeTrack()
 
@@ -460,7 +479,6 @@ public class MusicPlayer {
 			lblAni.setIcon(iconStatic);
 			playStatus = 2;
 			pauseTrack();
-
 		}
 
 		else {
@@ -497,7 +515,7 @@ public class MusicPlayer {
 		} catch (Exception e2) {
 		}
 		if (filepathresponse == JFileChooser.APPROVE_OPTION && playStatus != 0)
-			playTrack(strPath, false);
+			playTrack(strPath);
 	}// end of jumpTrack()
 
 }
