@@ -27,7 +27,7 @@ public class MusicPlayer {
 	JLabel lblPlayer, lblLogo, lblAni;
 	JButton btnClose, btnLogo, btnStop, btnMPrev, btnMPP, btnMNext, btnLoop;
 	ImageIcon appIcon, iconClose, iconLogo, iconStop, iconPrev, iconPlay, iconPause, iconStatic, iconNext,
-			iconLoopEnabled, iconLoopDisabled;
+			iconLoopEnabled, iconLoopDisabled, iconAni;
 	Image imageClose, mainImage, imageLogo, imageStop, imagePrev, imagePlay, imagePause, imageLoopEnabled,
 			imageLoopDisabled, imageStatic, imageNext, imageAni;
 
@@ -42,7 +42,7 @@ public class MusicPlayer {
 	FileInputStream fis1;
 	File[] selectedFiles;
 	BufferedInputStream bis1;
-	JFileChooser fcPath = new JFileChooser("C:\\Users\\Rajasree\\Desktop\\Sushma\\Code\\Java Music Player MiniProject\\Test Music");
+	JFileChooser fcPath = new JFileChooser();
 	String strPath = "", strPathNew;
 	FileNameExtensionFilter filter;
 
@@ -322,6 +322,11 @@ public class MusicPlayer {
 			}
 		});
 		pnlBody.add(btnLoop);
+		
+		// Music Visualizer
+		iconAni = new ImageIcon("src/assets/playanimation.gif");
+		imageAni = iconAni.getImage().getScaledInstance(350, 260, Image.SCALE_DEFAULT);
+		iconAni.setImage(imageAni);
 
 		iconStatic = new ImageIcon("src/assets/musicplay.png");
 		imageStatic = iconStatic.getImage().getScaledInstance(330, 200, Image.SCALE_DEFAULT);
@@ -383,6 +388,11 @@ public class MusicPlayer {
 
 		pnlBodyList.add(scrollPane);
 	}
+
+	public void setVisual() {
+		lblAni.setIcon(iconAni);
+	}
+	
 	public void stopPlayer() {
 		try {
 			player.close();
@@ -410,6 +420,7 @@ public class MusicPlayer {
 			}
 			playStatus = 1;
 			btnMPP.setIcon(iconPause);
+			setVisual();
 			lblCurrentSong.setText(selectedFiles[trackNo].getName());
 			strPathNew = path + "";
 			btnMPP.setToolTipText("Pause");
@@ -545,6 +556,7 @@ public class MusicPlayer {
 				playStatus = 2;
 				seekBar.setValue(0);
 				btnMPP.setIcon(iconPlay);
+				lblAni.setIcon(iconStatic);
 				btnMPP.setToolTipText("Resume");
 				return;
 			} catch (Exception exp) {
