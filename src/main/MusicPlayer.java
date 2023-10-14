@@ -535,7 +535,9 @@ public class MusicPlayer {
 
 	public void jumpTrack(int index) {
 		try {
-			player.close();
+			seekBar.setValue(0);
+			if (player != null)
+				player.close();
 			trackNo = index;
 			strPath = selectedFiles[trackNo].getAbsolutePath();
 			strPath = strPath.replace("\\", "\\\\");
