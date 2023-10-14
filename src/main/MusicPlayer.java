@@ -62,7 +62,7 @@ public class MusicPlayer {
 		frmPlayer.setLocationRelativeTo(null);
 		frmPlayer.setUndecorated(true);
 		frmPlayer.setLayout(null);
-		frmPlayer.setOpacity(0.9f);
+		frmPlayer.setOpacity(1);
 
 		// To set app icon
 		appIcon = new ImageIcon("src/assets/musicplay.png");
@@ -74,7 +74,7 @@ public class MusicPlayer {
 		pnlHeader.setBackground(Color.black);
 		pnlHeader.setBounds(0, 0, width, 50);
 		pnlHeader.setLayout(null);
-		frmPlayer.getContentPane().add(pnlHeader);
+		frmPlayer.add(pnlHeader);
 
 		// To create scaled icon image
 		iconLogo = new ImageIcon("src/assets/musicplay.png");
@@ -136,7 +136,7 @@ public class MusicPlayer {
 		pnlHeaderTrack.setBackground(Color.black);
 		pnlHeaderTrack.setBounds(0, 52, width, 30);
 		pnlHeaderTrack.setLayout(null);
-		frmPlayer.getContentPane().add(pnlHeaderTrack);
+		frmPlayer.add(pnlHeaderTrack);
 
 		// Allow player to be dragged from track display panel
 		mml4 = new MoveMouseListener(pnlHeaderTrack);
@@ -158,7 +158,7 @@ public class MusicPlayer {
 		pnlBody.setBackground(Color.black);
 		pnlBody.setBounds(0, 84, width - 250, height - 30);
 		pnlBody.setLayout(null);
-		frmPlayer.getContentPane().add(pnlBody);
+		frmPlayer.add(pnlBody);
 
 		mml2 = new MoveMouseListener(pnlBody);
 		pnlBody.addMouseListener(mml2);
@@ -211,8 +211,7 @@ public class MusicPlayer {
 		iconStop.setImage(imageStop);
 
 		btnStop = new JButton(iconStop);
-		btnStop.setBounds(30, 270, 30, 30);
-		btnStop.setBackground(Color.BLACK);
+		btnStop.setBounds(65, 267, 30, 30);
 		btnStop.setFocusPainted(false);
 		btnStop.setBorderPainted(false);
 		btnStop.setContentAreaFilled(false);
@@ -232,8 +231,7 @@ public class MusicPlayer {
 		iconPrev.setImage(imagePrev);
 
 		btnMPrev = new JButton(iconPrev);
-		btnMPrev.setBounds(130, 270, 30, 30);
-		btnMPrev.setBackground(Color.BLACK);
+		btnMPrev.setBounds(110, 267, 30, 30);
 		btnMPrev.setFocusPainted(false);
 		btnMPrev.setBorderPainted(false);
 		btnMPrev.setContentAreaFilled(false);
@@ -259,8 +257,7 @@ public class MusicPlayer {
 
 		// Add button to play/pause track
 		btnMPP = new JButton(iconPlay);
-		btnMPP.setBounds(205, 260, 42, 42);
-		btnMPP.setBackground(Color.BLACK);
+		btnMPP.setBounds(155, 260, 42, 42);
 		btnMPP.setFocusPainted(false);
 		btnMPP.setBorderPainted(false);
 		btnMPP.setContentAreaFilled(false);
@@ -280,8 +277,7 @@ public class MusicPlayer {
 		iconNext.setImage(imageNext);
 
 		btnMNext = new JButton(iconNext);
-		btnMNext.setBounds(290, 270, 30, 30);
-		btnMNext.setBackground(Color.BLACK);
+		btnMNext.setBounds(210, 267, 30, 30);
 		btnMNext.setFocusPainted(false);
 		btnMNext.setBorderPainted(false);
 		btnMNext.setContentAreaFilled(false);
@@ -289,6 +285,7 @@ public class MusicPlayer {
 		btnMNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				nextTrack();
+				seekBar.setValue(0);
 			}
 		});
 		pnlBody.add(btnMNext);
@@ -303,7 +300,7 @@ public class MusicPlayer {
 		iconStatic.setImage(imageStatic);
 
 		lblAni = new JLabel(iconStatic);
-		lblAni.setBounds(5, 0, 350, 260);
+		lblAni.setBounds(0, 0, 350, 260);
 		pnlBody.add(lblAni);
 
 		// Track List
@@ -322,7 +319,7 @@ public class MusicPlayer {
 		pnlBodyList.addMouseListener(mml3);
 		pnlBodyList.addMouseMotionListener(mml3);
 
-		frmPlayer.getContentPane().add(pnlBodyList);
+		frmPlayer.add(pnlBodyList);
 
 		displayTrackList();
 
