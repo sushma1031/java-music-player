@@ -13,6 +13,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -23,10 +25,11 @@ public class MusicPlayer {
 	JFrame frmPlayer;
 	JPanel pnlHeader, pnlHeaderTrack, pnlBody, pnlBodyList;
 	JLabel lblPlayer, lblLogo, lblAni;
-	JButton btnClose, btnLogo, btnStop, btnMPrev, btnMPP, btnMNext;
-	ImageIcon appIcon, iconClose, iconLogo, iconStop, iconPrev, iconPlay, iconPause, iconStatic, iconNext, iconAni;
-	Image imageClose, mainImage, imageLogo, imageStop, imagePrev, imagePlay, imagePause, imageStatic, imageNext,
-			imageAni;
+	JButton btnClose, btnLogo, btnStop, btnMPrev, btnMPP, btnMNext, btnLoop;
+	ImageIcon appIcon, iconClose, iconLogo, iconStop, iconPrev, iconPlay, iconPause, iconStatic, iconNext,
+			iconLoopEnabled, iconLoopDisabled;
+	Image imageClose, mainImage, imageLogo, imageStop, imagePrev, imagePlay, imagePause, imageLoopEnabled,
+			imageLoopDisabled, imageStatic, imageNext;
 
 	DefaultListModel<String> listModel;
 	JList<String> list;
@@ -34,7 +37,7 @@ public class MusicPlayer {
 
 	long pauseLoc, songLength;
 	int playStatus = 0, filepathresponse, trackNo = 0;
-	// Play Status: {0: stop, 1: playing, 2: paused}
+	// Play Status: {0: stop, 1: playing, 2: paused, 3: next/previous}
 	public Player player;
 	FileInputStream fis1;
 	File[] selectedFiles;
@@ -47,8 +50,13 @@ public class MusicPlayer {
 	ExitFrame exitFrameObj;
 
 	JLabel lblCurrentSong;
+	JSlider seekBar;
 
 	int width = 600, height = 410;
+
+	Timer timer = new Timer(1000, null);
+	int currentSeekPosition;
+	boolean loopEnabled = true;
 
 	public MusicPlayer() {
 
@@ -57,7 +65,7 @@ public class MusicPlayer {
 		frmPlayer.setLocationRelativeTo(null);
 		frmPlayer.setUndecorated(true);
 		frmPlayer.setLayout(null);
-		frmPlayer.setOpacity(0.9f);
+		frmPlayer.setOpacity(1);
 
 		// To set app icon
 		appIcon = new ImageIcon("src/assets/musicplay.png");
@@ -69,7 +77,7 @@ public class MusicPlayer {
 		pnlHeader.setBackground(Color.black);
 		pnlHeader.setBounds(0, 0, width, 50);
 		pnlHeader.setLayout(null);
-		frmPlayer.getContentPane().add(pnlHeader);
+		frmPlayer.add(pnlHeader);
 
 		// To create scaled icon image
 		iconLogo = new ImageIcon("src/assets/musicplay.png");
@@ -131,7 +139,7 @@ public class MusicPlayer {
 		pnlHeaderTrack.setBackground(Color.black);
 		pnlHeaderTrack.setBounds(0, 52, width, 30);
 		pnlHeaderTrack.setLayout(null);
-		frmPlayer.getContentPane().add(pnlHeaderTrack);
+		frmPlayer.add(pnlHeaderTrack);
 
 		// Allow player to be dragged from track display panel
 		mml4 = new MoveMouseListener(pnlHeaderTrack);
@@ -151,9 +159,9 @@ public class MusicPlayer {
 	public void decoratePlayer() {
 		pnlBody = new JPanel();
 		pnlBody.setBackground(Color.black);
-		pnlBody.setBounds(0, 84, width - 250, height - 84);
+		pnlBody.setBounds(0, 84, width - 250, height - 30);
 		pnlBody.setLayout(null);
-		frmPlayer.getContentPane().add(pnlBody);
+		frmPlayer.add(pnlBody);
 
 		mml2 = new MoveMouseListener(pnlBody);
 		pnlBody.addMouseListener(mml2);
@@ -166,20 +174,54 @@ public class MusicPlayer {
 		lblCurrentSong.setForeground(Color.WHITE);
 		pnlHeaderTrack.add(lblCurrentSong);
 
+		// Add seek bar component
+		seekBar = new JSlider(JSlider.HORIZONTAL, 0, 300, 0);
+		seekBar.setBounds(25, 240, width - 300, 15);
+		seekBar.setPaintTicks(false);
+		seekBar.setPaintLabels(false);
+		seekBar.setSnapToTicks(true);
+		seekBar.setOpaque(false);
+		seekBar.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				if (playStatus == 3) {
+					playStatus = 1;
+					return;
+				}
+				if (playStatus == 0) {
+					timer.stop();
+					return;
+				}
+				if (!seekBar.getValueIsAdjusting()) {
+					int position = (int) seekBar.getValue();
+					float percentage = (float) (300 - position) / 300;
+					pauseLoc = (long) (percentage * songLength);
+					try {
+						timer.stop();
+						player.close();
+						playStatus = 2;
+						playTrack(strPathNew);
+					} catch (Exception e3) {
+						e3.printStackTrace();
+					}
+				}
+			}
+		});
+		pnlBody.add(seekBar);
+		
 		// Add button to stop playing
 		iconStop = new ImageIcon("src/assets/PNGStop.png");
-		imageStop = iconStop.getImage().getScaledInstance(39, 39, Image.SCALE_SMOOTH);
+		imageStop = iconStop.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH);
 		iconStop.setImage(imageStop);
 
 		btnStop = new JButton(iconStop);
-		btnStop.setBounds(20, 270, 42, 42);
-		btnStop.setBackground(Color.BLACK);
+		btnStop.setBounds(65, 267, 30, 30);
 		btnStop.setFocusPainted(false);
 		btnStop.setBorderPainted(false);
 		btnStop.setContentAreaFilled(false);
 		btnStop.setToolTipText("Stop");
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				playStatus = 0;
 				stopPlayer();
 			}
 
@@ -188,12 +230,11 @@ public class MusicPlayer {
 
 		// Add button to go to previous track in queue
 		iconPrev = new ImageIcon("src/assets/PNGPrevious.png");
-		imagePrev = iconPrev.getImage().getScaledInstance(39, 39, Image.SCALE_SMOOTH);
+		imagePrev = iconPrev.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH);
 		iconPrev.setImage(imagePrev);
 
 		btnMPrev = new JButton(iconPrev);
-		btnMPrev.setBounds(120, 270, 42, 42);
-		btnMPrev.setBackground(Color.BLACK);
+		btnMPrev.setBounds(110, 267, 30, 30);
 		btnMPrev.setFocusPainted(false);
 		btnMPrev.setBorderPainted(false);
 		btnMPrev.setContentAreaFilled(false);
@@ -201,6 +242,7 @@ public class MusicPlayer {
 		btnMPrev.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				prevTrack();
+				seekBar.setValue(0);
 			}
 
 		});
@@ -208,19 +250,18 @@ public class MusicPlayer {
 
 		// Create icon play track
 		iconPlay = new ImageIcon("src/assets/PNGPlay.png");
-		imagePlay = iconPlay.getImage().getScaledInstance(59, 59, Image.SCALE_SMOOTH);
+		imagePlay = iconPlay.getImage().getScaledInstance(39, 39, Image.SCALE_SMOOTH);
 		iconPlay.setImage(imagePlay);
 
 		// Create icon to pause track
 		iconPause = new ImageIcon("src/assets/PNGPause.png");
 		imagePause = iconPause.getImage();
-		imagePause = imagePause.getScaledInstance(59, 59, Image.SCALE_SMOOTH);
+		imagePause = imagePause.getScaledInstance(39, 39, Image.SCALE_SMOOTH);
 		iconPause.setImage(imagePause);
 
 		// Add button to play/pause track
 		btnMPP = new JButton(iconPlay);
-		btnMPP.setBounds(190, 260, 63, 63);
-		btnMPP.setBackground(Color.BLACK);
+		btnMPP.setBounds(155, 260, 42, 42);
 		btnMPP.setFocusPainted(false);
 		btnMPP.setBorderPainted(false);
 		btnMPP.setContentAreaFilled(false);
@@ -236,12 +277,11 @@ public class MusicPlayer {
 		// Add button to go to next track in queue
 		iconNext = new ImageIcon("src/assets/PNGNext.png");
 		imageNext = iconNext.getImage();
-		imageNext = imageNext.getScaledInstance(39, 39, Image.SCALE_SMOOTH);
+		imageNext = imageNext.getScaledInstance(27, 27, Image.SCALE_SMOOTH);
 		iconNext.setImage(imageNext);
 
 		btnMNext = new JButton(iconNext);
-		btnMNext.setBounds(280, 270, 42, 42);
-		btnMNext.setBackground(Color.BLACK);
+		btnMNext.setBounds(210, 267, 30, 30);
 		btnMNext.setFocusPainted(false);
 		btnMNext.setBorderPainted(false);
 		btnMNext.setContentAreaFilled(false);
@@ -249,21 +289,47 @@ public class MusicPlayer {
 		btnMNext.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				nextTrack();
+				seekBar.setValue(0);
 			}
 		});
 		pnlBody.add(btnMNext);
 
-		// Music Visualizer
-		iconAni = new ImageIcon("src/assets/playanimation.gif");
-		imageAni = iconAni.getImage().getScaledInstance(350, 260, Image.SCALE_DEFAULT);
-		iconAni.setImage(imageAni);
+		// Add button to control track looping
+		iconLoopEnabled = new ImageIcon("src/assets/PNGLoopEnabled.png");
+		imageLoopEnabled = iconLoopEnabled.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH);
+		iconLoopEnabled.setImage(imageLoopEnabled);
+
+		iconLoopDisabled = new ImageIcon("src/assets/PNGLoopDisabled.png");
+		imageLoopDisabled = iconLoopDisabled.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH);
+		iconLoopDisabled.setImage(imageLoopDisabled);
+
+		btnLoop = new JButton(iconLoopEnabled);
+		btnLoop.setBounds(255, 267, 30, 30);
+		btnLoop.setFocusPainted(false);
+		btnLoop.setBorderPainted(false);
+		btnLoop.setContentAreaFilled(false);
+		btnLoop.setToolTipText("Disable looping");
+		btnLoop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setLoopEnabled(!loopEnabled);
+				if (loopEnabled) {
+					btnLoop.setIcon(iconLoopEnabled);
+					btnLoop.setToolTipText("Disable looping");
+				} else {
+					btnLoop.setIcon(iconLoopDisabled);
+					btnLoop.setToolTipText("Enable looping");
+				}
+			}
+		});
+		pnlBody.add(btnLoop);
+		
 
 		iconStatic = new ImageIcon("src/assets/musicplay.png");
 		imageStatic = iconStatic.getImage().getScaledInstance(330, 200, Image.SCALE_DEFAULT);
 		iconStatic.setImage(imageStatic);
 
 		lblAni = new JLabel(iconStatic);
-		lblAni.setBounds(5, 0, 350, 260);
+		lblAni.setBounds(0, 0, 350, 260);
 		pnlBody.add(lblAni);
 
 		// Track List
@@ -282,7 +348,7 @@ public class MusicPlayer {
 		pnlBodyList.addMouseListener(mml3);
 		pnlBodyList.addMouseMotionListener(mml3);
 
-		frmPlayer.getContentPane().add(pnlBodyList);
+		frmPlayer.add(pnlBodyList);
 
 		displayTrackList();
 
@@ -318,19 +384,14 @@ public class MusicPlayer {
 
 		pnlBodyList.add(scrollPane);
 	}
-
-	public void setVisual() {
-		lblAni.setIcon(iconAni);
-	}
 	
 	public void stopPlayer() {
 		try {
-			playStatus = 0;
+			player.close();
 			strPath = "";
 			lblCurrentSong.setText("Hit the PLAY button");
 			btnMPP.setIcon(iconPlay);
 			lblAni.setIcon(iconStatic);
-			player.close();
 			trackNo = 0;
 			btnMPP.setToolTipText("Select MP3 files");
 			listModel.clear();
@@ -338,18 +399,19 @@ public class MusicPlayer {
 		}
 	}
 
-	public void playTrack(String path, boolean resume) {
+	public void playTrack(String path) {
 		try {
 			fis1 = new FileInputStream(path);
 			bis1 = new BufferedInputStream(fis1);
 			player = new Player(bis1);
 			songLength = fis1.available();
-			playStatus = 1;
-			if(resume) {
+			if (playStatus == 2) {
 				fis1.skip(songLength - pauseLoc);
+			} else {
+				currentSeekPosition = 0;
 			}
+			playStatus = 1;
 			btnMPP.setIcon(iconPause);
-			setVisual();
 			lblCurrentSong.setText(selectedFiles[trackNo].getName());
 			strPathNew = path + "";
 			btnMPP.setToolTipText("Pause");
@@ -358,7 +420,7 @@ public class MusicPlayer {
 			playStatus = 0;
 			btnMPP.setIcon(iconPlay);
 			lblAni.setIcon(iconLogo);
-			lblCurrentSong.setText("");
+			lblCurrentSong.setText("Help");
 			btnMPP.setToolTipText("Select MP3 files");
 
 		} catch (IOException e) {
@@ -369,6 +431,7 @@ public class MusicPlayer {
 				try {
 					player.play();
 					if (player.isComplete()) {
+						playStatus = 3;
 						btnMNext.doClick();
 					}
 				} catch (JavaLayerException e) {
@@ -380,7 +443,28 @@ public class MusicPlayer {
 				}
 			}
 		}.start();
+		ActionListener updateSeekBarPosition = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					if (playStatus != 1) {
+						timer.stop();
+						return;
+					}
 
+					currentSeekPosition = (int) ((float) (songLength - fis1.available()) / songLength * 300);
+					seekBar.setValueIsAdjusting(true);
+					seekBar.setValue(currentSeekPosition);
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		timer.addActionListener(updateSeekBarPosition);
+		if (timer.isRunning())
+			timer.restart();
+		else
+			timer.start();
 	}// end of playTrack()
 
 	public void pauseTrack() {
@@ -396,20 +480,15 @@ public class MusicPlayer {
 	}// end of pauseTrack()
 
 	public void resumeTrack() {
-
-		playTrack(strPathNew, true);
+		playTrack(strPathNew);
 
 	}// end of resumeTrack()
 
 	public void prevTrack() {
-		try {
-			if (trackNo == 0)
-				trackNo = selectedFiles.length;
-
-			player.close();
+		if (trackNo > 0)
 			trackNo--;
-		} catch (Exception e2) {
-		}
+		else if (loopEnabled)
+			trackNo = selectedFiles.length - 1;
 
 		if (trackNo == selectedFiles.length - 1 && selectedFiles.length - 1 == 0) {// if there is only one track
 			jumpTrack(0);
@@ -446,10 +525,8 @@ public class MusicPlayer {
 
 		else if (playStatus == 1) {
 			btnMPP.setIcon(iconPlay);
-			lblAni.setIcon(iconStatic);
 			playStatus = 2;
 			pauseTrack();
-
 		}
 
 		else {
@@ -458,16 +535,25 @@ public class MusicPlayer {
 	}// end of playPauseTrack()
 
 	public void nextTrack() {
-		try {
-			if (trackNo == selectedFiles.length - 1)
-				trackNo = -1;
-
-			player.close();
+		if (trackNo < selectedFiles.length - 1) {
 			trackNo++;
-		} catch (Exception e2) {
+		} else if (loopEnabled)
+			trackNo = 0;
+		else {
+			try {
+				player.close();
+				pauseLoc = songLength;
+				playStatus = 2;
+				seekBar.setValue(0);
+				btnMPP.setIcon(iconPlay);
+				btnMPP.setToolTipText("Resume");
+				return;
+			} catch (Exception exp) {
+
+			}
 		}
 
-		if (trackNo == 0 && selectedFiles.length - 1 == 0) {// if there is only one song
+		if (selectedFiles.length == 1) {// if there's no change in trackNo
 			jumpTrack(0);
 		} else {
 			try {
@@ -479,14 +565,20 @@ public class MusicPlayer {
 
 	public void jumpTrack(int index) {
 		try {
-			player.close();
+			seekBar.setValue(0);
+			if (player != null)
+				player.close();
 			trackNo = index;
 			strPath = selectedFiles[trackNo].getAbsolutePath();
 			strPath = strPath.replace("\\", "\\\\");
 		} catch (Exception e2) {
 		}
 		if (filepathresponse == JFileChooser.APPROVE_OPTION && playStatus != 0)
-			playTrack(strPath, false);
+			playTrack(strPath);
 	}// end of jumpTrack()
+
+	public void setLoopEnabled(boolean value) {
+		loopEnabled = value;
+	}
 
 }
