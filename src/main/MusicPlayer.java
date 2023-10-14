@@ -25,10 +25,11 @@ public class MusicPlayer {
 	JFrame frmPlayer;
 	JPanel pnlHeader, pnlHeaderTrack, pnlBody, pnlBodyList;
 	JLabel lblPlayer, lblLogo, lblAni;
-	JButton btnClose, btnLogo, btnStop, btnMPrev, btnMPP, btnMNext;
-	ImageIcon appIcon, iconClose, iconLogo, iconStop, iconPrev, iconPlay, iconPause, iconStatic, iconNext, iconAni;
-	Image imageClose, mainImage, imageLogo, imageStop, imagePrev, imagePlay, imagePause, imageStatic, imageNext,
-			imageAni;
+	JButton btnClose, btnLogo, btnStop, btnMPrev, btnMPP, btnMNext, btnLoop;
+	ImageIcon appIcon, iconClose, iconLogo, iconStop, iconPrev, iconPlay, iconPause, iconStatic, iconNext,
+			iconLoopEnabled, iconLoopDisabled, iconAni;
+	Image imageClose, mainImage, imageLogo, imageStop, imagePrev, imagePlay, imagePause, imageLoopEnabled,
+			imageLoopDisabled, imageStatic, imageNext, imageAni;
 
 	DefaultListModel<String> listModel;
 	JList<String> list;
@@ -55,6 +56,8 @@ public class MusicPlayer {
 
 	Timer timer = new Timer(1000, null);
 	int currentSeekPosition;
+	boolean loopEnabled = true;
+
 	public MusicPlayer() {
 
 		frmPlayer = new JFrame();
@@ -239,6 +242,7 @@ public class MusicPlayer {
 		btnMPrev.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				prevTrack();
+				seekBar.setValue(0);
 			}
 
 		});
@@ -290,6 +294,35 @@ public class MusicPlayer {
 		});
 		pnlBody.add(btnMNext);
 
+		// Add button to control track looping
+		iconLoopEnabled = new ImageIcon("src/assets/PNGLoopEnabled.png");
+		imageLoopEnabled = iconLoopEnabled.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH);
+		iconLoopEnabled.setImage(imageLoopEnabled);
+
+		iconLoopDisabled = new ImageIcon("src/assets/PNGLoopDisabled.png");
+		imageLoopDisabled = iconLoopDisabled.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH);
+		iconLoopDisabled.setImage(imageLoopDisabled);
+
+		btnLoop = new JButton(iconLoopEnabled);
+		btnLoop.setBounds(255, 267, 30, 30);
+		btnLoop.setFocusPainted(false);
+		btnLoop.setBorderPainted(false);
+		btnLoop.setContentAreaFilled(false);
+		btnLoop.setToolTipText("Disable looping");
+		btnLoop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				setLoopEnabled(!loopEnabled);
+				if (loopEnabled) {
+					btnLoop.setIcon(iconLoopEnabled);
+					btnLoop.setToolTipText("Disable looping");
+				} else {
+					btnLoop.setIcon(iconLoopDisabled);
+					btnLoop.setToolTipText("Enable looping");
+				}
+			}
+		});
+		pnlBody.add(btnLoop);
+		
 		// Music Visualizer
 		iconAni = new ImageIcon("src/assets/playanimation.gif");
 		imageAni = iconAni.getImage().getScaledInstance(350, 260, Image.SCALE_DEFAULT);
@@ -382,6 +415,8 @@ public class MusicPlayer {
 			songLength = fis1.available();
 			if (playStatus == 2) {
 				fis1.skip(songLength - pauseLoc);
+			} else {
+				currentSeekPosition = 0;
 			}
 			playStatus = 1;
 			btnMPP.setIcon(iconPause);
@@ -459,14 +494,10 @@ public class MusicPlayer {
 	}// end of resumeTrack()
 
 	public void prevTrack() {
-		try {
-			if (trackNo == 0)
-				trackNo = selectedFiles.length;
-
-			player.close();
+		if (trackNo > 0)
 			trackNo--;
-		} catch (Exception e2) {
-		}
+		else if (loopEnabled)
+			trackNo = selectedFiles.length - 1;
 
 		if (trackNo == selectedFiles.length - 1 && selectedFiles.length - 1 == 0) {// if there is only one track
 			jumpTrack(0);
@@ -514,16 +545,26 @@ public class MusicPlayer {
 	}// end of playPauseTrack()
 
 	public void nextTrack() {
-		try {
-			if (trackNo == selectedFiles.length - 1)
-				trackNo = -1;
-
-			player.close();
+		if (trackNo < selectedFiles.length - 1) {
 			trackNo++;
-		} catch (Exception e2) {
+		} else if (loopEnabled)
+			trackNo = 0;
+		else {
+			try {
+				player.close();
+				pauseLoc = songLength;
+				playStatus = 2;
+				seekBar.setValue(0);
+				btnMPP.setIcon(iconPlay);
+				lblAni.setIcon(iconStatic);
+				btnMPP.setToolTipText("Resume");
+				return;
+			} catch (Exception exp) {
+
+			}
 		}
 
-		if (trackNo == 0 && selectedFiles.length - 1 == 0) {// if there is only one song
+		if (selectedFiles.length == 1) {// if there's no change in trackNo
 			jumpTrack(0);
 		} else {
 			try {
@@ -546,5 +587,9 @@ public class MusicPlayer {
 		if (filepathresponse == JFileChooser.APPROVE_OPTION && playStatus != 0)
 			playTrack(strPath);
 	}// end of jumpTrack()
+
+	public void setLoopEnabled(boolean value) {
+		loopEnabled = value;
+	}
 
 }
