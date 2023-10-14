@@ -18,7 +18,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.JSlider;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
@@ -37,7 +36,7 @@ public class MusicPlayer {
 
 	long pauseLoc, songLength;
 	int playStatus = 0, filepathresponse, trackNo = 0;
-	// Play Status: {0: stop, 1: playing, 2: paused}
+	// Play Status: {0: stop, 1: playing, 2: paused, 3: next/previous}
 	public Player player;
 	FileInputStream fis1;
 	File[] selectedFiles;
@@ -54,6 +53,8 @@ public class MusicPlayer {
 
 	int width = 600, height = 410;
 
+	Timer timer = new Timer(1000, null);
+	int currentSeekPosition;
 	public MusicPlayer() {
 
 		frmPlayer = new JFrame();
@@ -179,12 +180,20 @@ public class MusicPlayer {
 		seekBar.setOpaque(false);
 		seekBar.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
+				if (playStatus == 3) {
+					playStatus = 1;
+					return;
+				}
+				if (playStatus == 0) {
+					timer.stop();
+					return;
+				}
 				if (!seekBar.getValueIsAdjusting()) {
 					int position = (int) seekBar.getValue();
 					float percentage = (float) (300 - position) / 300;
 					pauseLoc = (long) (percentage * songLength);
 					try {
-						//timer.stop();
+						timer.stop();
 						player.close();
 						playStatus = 2;
 						playTrack(strPathNew);
@@ -411,7 +420,28 @@ public class MusicPlayer {
 				}
 			}
 		}.start();
+		ActionListener updateSeekBarPosition = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				try {
+					if (playStatus != 1) {
+						timer.stop();
+						return;
+					}
 
+					currentSeekPosition = (int) ((float) (songLength - fis1.available()) / songLength * 300);
+					seekBar.setValueIsAdjusting(true);
+					seekBar.setValue(currentSeekPosition);
+
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		timer.addActionListener(updateSeekBarPosition);
+		if (timer.isRunning())
+			timer.restart();
+		else
+			timer.start();
 	}// end of playTrack()
 
 	public void pauseTrack() {
